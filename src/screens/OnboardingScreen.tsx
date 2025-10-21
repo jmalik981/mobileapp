@@ -23,7 +23,7 @@ export default function OnboardingScreen({ navigation }: any) {
       }
       const { error } = await supabase
         .from('profiles')
-        .update({ display_name: firstName.trim() })
+        .update({ first_name: firstName.trim() })
         .eq('id', uid);
       if (error) throw error;
       // Navigate to main app
