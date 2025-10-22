@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,18 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../lib/supabase'; // adjust path if needed
 
 export default function ProfileScreen({ navigation }: any) {
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+
   const [notificationSettings, setNotificationSettings] = useState({
     pushNotifications: true,
     smsNotifications: false,
@@ -18,51 +26,116 @@ export default function ProfileScreen({ navigation }: any) {
     locationTracking: true,
   });
 
-  const [userStats] = useState({
-    followedRestaurants: 3,
-    dealsUsed: 12,
-    moneySaved: 85.50,
-  });
+  // Fetch current user and favorites
+  const getCurrentUser = async () => {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
-  const toggleNotification = (key: keyof typeof notificationSettings) => {
-    setNotificationSettings(prev => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+      if (error) throw error;
+      setCurrentUser(user);
+
+      if (user) {
+        const { data: favoriteRows, error: favError } = await supabase
+          .from('favorites')
+          .select('restaurant_id')
+          .eq('user_id', user.id);
+
+        if (favError) throw favError;
+        setFavoritesCount(favoriteRows?.length || 0);
+      }
+    } catch (error) {
+      console.error('User error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign Out', style: 'destructive', onPress: () => {
-          // TODO: Clear user session/tokens when Supabase is integrated
-          // For now, navigate back to login screen
+  // Sign out user properly
+  const handleSignOut = async () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          const { error } = await supabase.auth.signOut();
+          if (error) {
+            Alert.alert('Error', error.message);
+            return;
+          }
           navigation.reset({
             index: 0,
             routes: [{ name: 'Login' }],
           });
-        }},
-      ]
-    );
+        },
+      },
+    ]);
   };
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
+
+  const userId = currentUser?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+    
+    const fetchStats = async () => {
+      const { data: followRows, error: followErr } = await supabase
+      .from('user_follows')
+      .select('id, restaurant_id, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+      if (followErr) throw followErr;
+
+      console.log('followCount', followRows);
+      setFollowingCount(followRows?.length || 0);
+
+    }
+    fetchStats()
+
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#171717" />
+      </View>
+    );
+  }
+
+  console.log('user', currentUser);
 
   return (
     <ScrollView style={styles.container}>
       {/* User Info Section */}
       <View style={styles.section}>
         <View style={styles.userInfo}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={40} color="#4169E1" />
-          </View>
+          {currentUser?.user_metadata?.avatar_url ? (
+            <Image
+              source={{ uri: currentUser.user_metadata.avatar_url }}
+              style={styles.avatarImage}
+            />
+          ) : (
+            <View style={styles.avatar}>
+              <Ionicons name="person" size={40} color="#171717" />
+            </View>
+          )}
           <View style={styles.userDetails}>
-            <Text style={styles.userName}>John Doe</Text>
-            <Text style={styles.userEmail}>john.doe@example.com</Text>
+            <Text style={styles.userName}>
+              {currentUser?.user_metadata?.first_name && ` ${currentUser?.user_metadata?.first_name}`}
+              {currentUser?.user_metadata?.last_name && ` ${currentUser?.user_metadata?.last_name}`}
+              {!currentUser?.user_metadata?.first_name && !currentUser?.user_metadata?.last_name && 'User'}
+            </Text>
+            <Text style={styles.userEmail}>{currentUser?.email}</Text>
           </View>
           <TouchableOpacity style={styles.editButton}>
-            <Ionicons name="pencil" size={20} color="#4169E1" />
+            <Ionicons name="pencil" size={20} color="#171717" />
           </TouchableOpacity>
         </View>
       </View>
@@ -72,110 +145,87 @@ export default function ProfileScreen({ navigation }: any) {
         <Text style={styles.sectionTitle}>Your Stats</Text>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{userStats.followedRestaurants}</Text>
+            <Text style={styles.statNumber}>{followingCount}</Text>
             <Text style={styles.statLabel}>Following</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{userStats.dealsUsed}</Text>
-            <Text style={styles.statLabel}>Deals Used</Text>
+            <Text style={styles.statNumber}>{favoritesCount}</Text>
+            <Text style={styles.statLabel}>
+              Favorites
+            </Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>${userStats.moneySaved}</Text>
-            <Text style={styles.statLabel}>Money Saved</Text>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>Reviews</Text>
           </View>
         </View>
       </View>
 
-      {/* Notification Settings */}
+      {/* Notification Settings (Dummy) */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Notification Settings</Text>
-        
-        <View style={styles.settingItem}>
-          <View style={styles.settingInfo}>
-            <Ionicons name="notifications" size={20} color="#4169E1" />
-            <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>Push Notifications</Text>
-              <Text style={styles.settingSubtitle}>Get notified about new deals</Text>
+        {[
+          {
+            icon: 'notifications',
+            title: 'Push Notifications',
+            subtitle: 'Get notified about new deals',
+            key: 'pushNotifications',
+          },
+          {
+            icon: 'chatbubble',
+            title: 'SMS Notifications',
+            subtitle: 'Receive deals via text message',
+            key: 'smsNotifications',
+          },
+          {
+            icon: 'mail',
+            title: 'Email Notifications',
+            subtitle: 'Weekly digest of deals',
+            key: 'emailNotifications',
+          },
+          {
+            icon: 'location',
+            title: 'Location Tracking',
+            subtitle: 'Find deals near you',
+            key: 'locationTracking',
+          },
+        ].map((item) => (
+          <View key={item.key} style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Ionicons name={item.icon as any} size={20} color="#171717" />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>{item.title}</Text>
+                <Text style={styles.settingSubtitle}>{item.subtitle}</Text>
+              </View>
             </View>
+            <Switch
+              value={notificationSettings[item.key as keyof typeof notificationSettings]}
+              onValueChange={() =>
+                setNotificationSettings((prev) => ({
+                  ...prev,
+                  [item.key]: !prev[item.key as keyof typeof notificationSettings],
+                }))
+              }
+              trackColor={{ false: '#ccc', true: '#171717' }}
+            />
           </View>
-          <Switch
-            value={notificationSettings.pushNotifications}
-            onValueChange={() => toggleNotification('pushNotifications')}
-            trackColor={{ false: '#ccc', true: '#4169E1' }}
-          />
-        </View>
-
-        <View style={styles.settingItem}>
-          <View style={styles.settingInfo}>
-            <Ionicons name="chatbubble" size={20} color="#4169E1" />
-            <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>SMS Notifications</Text>
-              <Text style={styles.settingSubtitle}>Receive deals via text message</Text>
-            </View>
-          </View>
-          <Switch
-            value={notificationSettings.smsNotifications}
-            onValueChange={() => toggleNotification('smsNotifications')}
-            trackColor={{ false: '#ccc', true: '#4169E1' }}
-          />
-        </View>
-
-        <View style={styles.settingItem}>
-          <View style={styles.settingInfo}>
-            <Ionicons name="mail" size={20} color="#4169E1" />
-            <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>Email Notifications</Text>
-              <Text style={styles.settingSubtitle}>Weekly digest of deals</Text>
-            </View>
-          </View>
-          <Switch
-            value={notificationSettings.emailNotifications}
-            onValueChange={() => toggleNotification('emailNotifications')}
-            trackColor={{ false: '#ccc', true: '#4169E1' }}
-          />
-        </View>
-
-        <View style={styles.settingItem}>
-          <View style={styles.settingInfo}>
-            <Ionicons name="location" size={20} color="#4169E1" />
-            <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>Location Tracking</Text>
-              <Text style={styles.settingSubtitle}>Find deals near you</Text>
-            </View>
-          </View>
-          <Switch
-            value={notificationSettings.locationTracking}
-            onValueChange={() => toggleNotification('locationTracking')}
-            trackColor={{ false: '#ccc', true: '#4169E1' }}
-          />
-        </View>
+        ))}
       </View>
 
-      {/* Menu Options */}
+      {/* Menu Options (Dummy) */}
       <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="help-circle-outline" size={20} color="#666" />
-          <Text style={styles.menuText}>Help & Support</Text>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="document-text-outline" size={20} color="#666" />
-          <Text style={styles.menuText}>Terms & Privacy</Text>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="star-outline" size={20} color="#666" />
-          <Text style={styles.menuText}>Rate the App</Text>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="share-outline" size={20} color="#666" />
-          <Text style={styles.menuText}>Share with Friends</Text>
-          <Ionicons name="chevron-forward" size={20} color="#ccc" />
-        </TouchableOpacity>
+        {[
+          { icon: 'help-circle-outline', text: 'Help & Support' },
+          { icon: 'document-text-outline', text: 'Terms & Privacy' },
+          { icon: 'star-outline', text: 'Rate the App' },
+          { icon: 'share-outline', text: 'Share with Friends' },
+        ].map((item) => (
+          <TouchableOpacity key={item.text} style={styles.menuItem}>
+            <Ionicons name={item.icon as any} size={20} color="#666" />
+            <Text style={styles.menuText}>{item.text}</Text>
+            <Ionicons name="chevron-forward" size={20} color="#ccc" />
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* Sign Out */}
@@ -194,26 +244,11 @@ export default function ProfileScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  section: {
-    backgroundColor: '#fff',
-    marginVertical: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 16,
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#f8f9fa' },
+  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  section: { backgroundColor: '#fff', marginVertical: 8, paddingHorizontal: 20, paddingVertical: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: '600', color: '#333', marginBottom: 16 },
+  userInfo: { flexDirection: 'row', alignItems: 'center' },
   avatar: {
     width: 60,
     height: 60,
@@ -223,39 +258,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
   },
-  userDetails: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: '#666',
-  },
-  editButton: {
-    padding: 8,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4169E1',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-  },
+  avatarImage: { width: 60, height: 60, borderRadius: 30, marginRight: 16 },
+  userDetails: { flex: 1 },
+  userName: { fontSize: 20, fontWeight: 'bold', color: '#333', marginBottom: 4 },
+  userEmail: { fontSize: 14, color: '#666' },
+  editButton: { padding: 8 },
+  statsContainer: { flexDirection: 'row', justifyContent: 'space-around' },
+  statItem: { alignItems: 'center' },
+  statNumber: { fontSize: 24, fontWeight: 'bold', color: '#171717', marginBottom: 4 },
+  statLabel: { fontSize: 12, color: '#666' },
   settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -264,25 +275,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  settingInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  settingText: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-  },
-  settingSubtitle: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
+  settingInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  settingText: { marginLeft: 12, flex: 1 },
+  settingTitle: { fontSize: 16, fontWeight: '500', color: '#333' },
+  settingSubtitle: { fontSize: 12, color: '#666', marginTop: 2 },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -290,30 +286,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  menuText: {
-    fontSize: 16,
-    color: '#333',
-    marginLeft: 12,
-    flex: 1,
-  },
-  signOutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-  },
-  signOutText: {
-    fontSize: 16,
-    color: '#e74c3c',
-    marginLeft: 8,
-    fontWeight: '500',
-  },
-  footer: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  version: {
-    fontSize: 12,
-    color: '#999',
-  },
+  menuText: { fontSize: 16, color: '#333', marginLeft: 12, flex: 1 },
+  signOutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16 },
+  signOutText: { fontSize: 16, color: '#e74c3c', marginLeft: 8, fontWeight: '500' },
+  footer: { alignItems: 'center', paddingVertical: 20 },
+  version: { fontSize: 12, color: '#999' },
 });

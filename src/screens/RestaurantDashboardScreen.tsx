@@ -91,7 +91,7 @@ const RestaurantDashboardScreen = () => {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.restaurantIcon}>
-            <Ionicons name="storefront" size={24} color="#4169E1" />
+            <Ionicons name="storefront" size={24} color="#171717" />
           </View>
           <View style={styles.restaurantInfo}>
             <Text style={styles.restaurantName}>{restaurantInfo.name}</Text>
@@ -146,14 +146,14 @@ const RestaurantDashboardScreen = () => {
                 <Switch
                   value={promotion.isActive}
                   onValueChange={() => togglePromotion(promotion.id)}
-                  trackColor={{ false: '#E9ECEF', true: '#4169E1' }}
+                  trackColor={{ false: '#E9ECEF', true: '#171717' }}
                   thumbColor={promotion.isActive ? '#FFFFFF' : '#FFFFFF'}
                 />
                 <TouchableOpacity 
                   style={styles.editButton}
                   onPress={() => handleEditPromotion(promotion.id)}
                 >
-                  <Ionicons name="pencil" size={16} color="#4169E1" />
+                  <Ionicons name="pencil" size={16} color="#171717" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -167,15 +167,15 @@ const RestaurantDashboardScreen = () => {
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.quickActions}>
           <TouchableOpacity style={styles.actionButton}>
-            <Ionicons name="analytics" size={24} color="#4169E1" />
+            <Ionicons name="analytics" size={24} color="#171717" />
             <Text style={styles.actionText}>Analytics</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
-            <Ionicons name="settings" size={24} color="#4169E1" />
+            <Ionicons name="settings" size={24} color="#171717" />
             <Text style={styles.actionText}>Settings</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
-            <Ionicons name="help-circle" size={24} color="#4169E1" />
+            <Ionicons name="help-circle" size={24} color="#171717" />
             <Text style={styles.actionText}>Help</Text>
           </TouchableOpacity>
         </View>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4169E1',
+    color: '#171717',
     marginBottom: 4,
   },
   statLabel: {
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   discountBadge: {
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 12,
-    color: '#4169E1',
+    color: '#171717',
     textTransform: 'capitalize',
   },
   promotionActions: {
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 14,
-    color: '#4169E1',
+    color: '#171717',
     fontWeight: '600',
     marginTop: 8,
   },

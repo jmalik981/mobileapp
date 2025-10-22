@@ -39,7 +39,7 @@ export default function OnboardingScreen({ navigation }: any) {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         <View style={styles.header}>
-          <Ionicons name="sparkles-outline" size={40} color="#4169E1" />
+          <Ionicons name="sparkles-outline" size={40} color="#171717" />
           <Text style={styles.title}>Welcome to That Happy Hour</Text>
           <Text style={styles.subtitle}>Let’s personalize your experience</Text>
         </View>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   inputIcon: { marginRight: 8 },
   input: { flex: 1, height: 48, color: '#222' },
   ctaButton: {
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',

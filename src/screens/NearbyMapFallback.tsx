@@ -79,7 +79,7 @@ export default function NearbyMapFallback() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#4169E1" />
+        <ActivityIndicator size="large" color="#171717" />
         <Text style={styles.loadingText}>Getting your location...</Text>
       </View>
     );
@@ -98,7 +98,7 @@ export default function NearbyMapFallback() {
   return (
     <View style={styles.container}>
       <View style={styles.infoCard}>
-        <Ionicons name="location" size={48} color="#4169E1" />
+        <Ionicons name="location" size={48} color="#171717" />
         <Text style={styles.title}>Your Current Location</Text>
         <Text style={styles.coords}>
           Latitude: {userLocation.coords.latitude.toFixed(6)}
@@ -120,7 +120,7 @@ export default function NearbyMapFallback() {
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={openInBrowser}>
-          <Ionicons name="globe-outline" size={24} color="#4169E1" />
+          <Ionicons name="globe-outline" size={24} color="#171717" />
           <Text style={[styles.buttonText, styles.secondaryButtonText]}>View in Browser</Text>
         </TouchableOpacity>
       </View>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#fff',
     borderWidth: 2,
-    borderColor: '#4169E1',
+    borderColor: '#171717',
   },
   buttonText: {
     color: '#fff',
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   secondaryButtonText: {
-    color: '#4169E1',
+    color: '#171717',
   },
   helpCard: {
     backgroundColor: '#fff9e6',

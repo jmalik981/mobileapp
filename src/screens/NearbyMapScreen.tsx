@@ -96,7 +96,7 @@ export default function NearbyMapScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#4169E1" />
+        <ActivityIndicator size="large" color="#171717" />
         <Text style={styles.loadingText}>Getting your location...</Text>
       </View>
     );
@@ -157,7 +157,7 @@ export default function NearbyMapScreen() {
       {/* Center on user button */}
       {userLocation && (
         <TouchableOpacity style={styles.centerButton} onPress={centerOnUser}>
-          <Ionicons name="locate" size={24} color="#4169E1" />
+          <Ionicons name="locate" size={24} color="#171717" />
         </TouchableOpacity>
       )}
 
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     borderWidth: 3,
     borderColor: '#ffffff',
     elevation: 5,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     bottom: -20,
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#4169E1',
+    color: '#171717',
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     borderWidth: 2,
     borderColor: '#ffffff',
     elevation: 3,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 45,
     fontSize: 12,
-    color: '#4169E1',
+    color: '#171717',
     fontWeight: 'bold',
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 8,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     borderWidth: 3,
     borderColor: '#fff',
     shadowColor: '#000',
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     borderWidth: 3,
     borderColor: '#fff',
     shadowColor: '#000',

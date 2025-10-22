@@ -162,7 +162,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             {/* Logo and Title */}
             <View style={styles.header}>
               <View style={styles.logoContainer}>
-                <Ionicons name="wine" size={60} color="#4169E1" />
+                <Ionicons name="wine" size={60} color="#171717" />
               </View>
               <View style={{ alignItems: 'center', marginBottom: 16 }}>
                 <Text style={{ color: '#111', fontSize: 18, fontWeight: '600' }}>Join the vibe.</Text>
@@ -228,7 +228,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setMode('register')} style={{ alignItems: 'center', marginBottom: 16 }}>
-                  <Text style={{ color: '#4169E1', fontWeight: '600' }}>Create an account</Text>
+                  <Text style={{ color: '#171717', fontWeight: '600' }}>Create an account</Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -243,7 +243,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setMode('login')} style={{ alignItems: 'center', marginBottom: 16 }}>
-                  <Text style={{ color: '#4169E1', fontWeight: '600' }}>I already have an account</Text>
+                  <Text style={{ color: '#171717', fontWeight: '600' }}>I already have an account</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -277,7 +277,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               style={styles.restaurantButton}
               onPress={handleRestaurantLogin}
             >
-              <Ionicons name="storefront-outline" size={20} color="#4169E1" />
+              <Ionicons name="storefront-outline" size={20} color="#171717" />
               <Text style={styles.restaurantButtonText}>Restaurant Login</Text>
             </TouchableOpacity>
 
@@ -286,7 +286,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               style={styles.developerButton}
               onPress={handleDeveloperLogin}
             >
-              <Ionicons name="code-outline" size={20} color="#4169E1" />
+              <Ionicons name="code-outline" size={20} color="#171717" />
               <Text style={styles.developerButtonText}>Developer Login</Text>
             </TouchableOpacity>
 
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    shadowColor: '#4169E1',
+    shadowColor: '#171717',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -378,12 +378,12 @@ const styles = StyleSheet.create({
   },
   
   loginButton: {
-    backgroundColor: '#4169E1',
+    backgroundColor: '#171717',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#4169E1',
+    shadowColor: '#171717',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     borderColor: '#E9ECEF',
   },
   secondaryButtonText: {
-    color: '#4169E1',
+    color: '#171717',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -443,10 +443,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginBottom: 16,
     borderWidth: 2,
-    borderColor: '#4169E1',
+    borderColor: '#171717',
   },
   restaurantButtonText: {
-    color: '#4169E1',
+    color: '#171717',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
@@ -460,11 +460,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginBottom: 24,
     borderWidth: 2,
-    borderColor: '#4169E1',
+    borderColor: '#171717',
     borderStyle: 'dashed',
   },
   developerButtonText: {
-    color: '#4169E1',
+    color: '#171717',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signUpText: {
-    color: '#4169E1',
+    color: '#171717',
     fontSize: 14,
     fontWeight: '600',
   },

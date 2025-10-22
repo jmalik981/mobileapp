@@ -43,10 +43,10 @@ function TabNavigator({ welcomeName }: { welcomeName?: string | null }) {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#4169E1',
+        tabBarActiveTintColor: '#171717',
         tabBarInactiveTintColor: 'gray',
         headerStyle: {
-          backgroundColor: '#4169E1',
+          backgroundColor: '#171717',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
@@ -199,7 +199,7 @@ export default function App() {
           component={OnboardingScreen} 
           options={{ 
             title: 'Welcome',
-            headerStyle: { backgroundColor: '#4169E1' },
+            headerStyle: { backgroundColor: '#171717' },
             headerTintColor: '#FFFFFF',
             headerTitleStyle: { fontWeight: 'bold' },
           }}
@@ -219,7 +219,7 @@ export default function App() {
           component={QRScannerScreen}
           options={{
             title: 'Scan QR Code',
-            headerStyle: { backgroundColor: '#4169E1' },
+            headerStyle: { backgroundColor: '#171717' },
             headerTintColor: '#FFFFFF',
             headerTitleStyle: { fontWeight: 'bold' },
           }}
@@ -229,7 +229,7 @@ export default function App() {
           component={RestaurantDetailScreen}
           options={{
             title: 'Restaurant Details',
-            headerStyle: { backgroundColor: '#4169E1' },
+            headerStyle: { backgroundColor: '#171717' },
             headerTintColor: '#FFFFFF',
             headerTitleStyle: { fontWeight: 'bold' },
           }}
