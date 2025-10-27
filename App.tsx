@@ -13,6 +13,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import RestaurantDashboardScreen from './src/screens/RestaurantDashboardScreen';
 import EditRestaurantScreen from './src/screens/EditRestaurantScreen';
 import ManageImagesScreen from './src/screens/ManageImagesScreen';
+import HappyHourScreen from './src/screens/HappyHourScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import NearbyMapWebView from './src/screens/NearbyMapWebView';
 import FollowingScreen from './src/screens/FollowingScreen';
@@ -233,6 +234,12 @@ export default function App() {
         <Stack.Screen 
           name="ManageImages" 
           component={ManageImagesScreen} 
+          options={{ headerShown: false }}
+        />
+    
+    <Stack.Screen 
+          name="HappyHour" 
+          component={HappyHourScreen} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 
