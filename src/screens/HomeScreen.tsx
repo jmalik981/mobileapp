@@ -131,7 +131,7 @@ async function geocodeAddress(
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
         address
-      )}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}`
+      )}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyBEDnzrtv8cs3x3UCLaPwjcg4RX7GHmzRE'}`
     );
     const data = await response.json();
     if (data.results && data.results[0]) {
@@ -1188,8 +1188,8 @@ export default function RestaurantListingsScreen({ navigation }: any) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Discover Restaurants</Text>
         <View style={styles.headerButtons}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => setShowMap(true)}>
-            <Ionicons name="map-outline" size={24} color="#171717" />
+          <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Map')}>
+            <Ionicons name="location" size={24} color="#171717" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => setShowFilters(true)}>
             <Ionicons name="options-outline" size={24} color="#171717" />
@@ -1198,7 +1198,7 @@ export default function RestaurantListingsScreen({ navigation }: any) {
       </View>
 
       {/* Search Bar */}
-      <View style={styles.searchContainer}>
+      {/* <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
@@ -1211,40 +1211,9 @@ export default function RestaurantListingsScreen({ navigation }: any) {
             <Ionicons name="close-circle" size={20} color="#999" />
           </TouchableOpacity>
         )}
-      </View>
+      </View> */}
 
-      {/* Location Bar */}
-      <View style={styles.locationCard}>
-        <View style={styles.locationCardLeft}>
-          <Ionicons name="location" size={20} color="#171717" />
-          <View style={styles.locationTextContainer}>
-            {location ? (
-              <>
-                <Text style={styles.locationTitle}>Showing near:</Text>
-                <Text style={styles.locationAddress}>{locationAddress}</Text>
-                <Text style={styles.locationRadius}>Within {radiusMiles} miles</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.locationTitle}>Location not set</Text>
-                <Text style={styles.locationAddress}>Enable location for nearby restaurants</Text>
-              </>
-            )}
-          </View>
-        </View>
-        <View style={styles.locationCardButtons}>
-          <TouchableOpacity
-            style={styles.locationButton}
-            onPress={() => setShowRadiusModal(true)}
-          >
-            <Ionicons name="resize-outline" size={18} color="#171717" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.locationButton} onPress={getLocationPermission}>
-            <Ionicons name="navigate" size={18} color="#171717" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
+    
       {/* Results Count */}
       <View style={styles.resultsBar}>
         <Text style={styles.resultsText}>

@@ -11,6 +11,8 @@ import { supabase } from './src/lib/supabase';
 // Import screens
 import LoginScreen from './src/screens/LoginScreen';
 import RestaurantDashboardScreen from './src/screens/RestaurantDashboardScreen';
+import EditRestaurantScreen from './src/screens/EditRestaurantScreen';
+import ManageImagesScreen from './src/screens/ManageImagesScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import NearbyMapWebView from './src/screens/NearbyMapWebView';
 import FollowingScreen from './src/screens/FollowingScreen';
@@ -18,6 +20,8 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import QRScannerScreen from './src/screens/QRScannerScreen';
 import RestaurantDetailScreen from './src/screens/RestaurantDetailScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import FavoritesScreen from './src/screens/FavoritesScreen';
+import NearbyMapScreen from './src/screens/NearbyMapScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -32,9 +36,11 @@ function TabNavigator({ welcomeName }: { welcomeName?: string | null }) {
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Map') {
-            iconName = focused ? 'map' : 'map-outline';
-          } else if (route.name === 'Following') {
+            iconName = focused ? 'locate' : 'locate-outline';
+          } else if (route.name === 'Favorites') {
             iconName = focused ? 'heart' : 'heart-outline';
+          } else if (route.name === 'Following') {
+            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else {
@@ -69,13 +75,18 @@ function TabNavigator({ welcomeName }: { welcomeName?: string | null }) {
       />
       <Tab.Screen 
         name="Map" 
-        component={NearbyMapWebView} 
+        component={NearbyMapScreen} 
         options={{ title: 'Nearby Restaurants' }}
       />
       <Tab.Screen 
         name="Following" 
         component={FollowingScreen} 
         options={{ title: 'Following' }}
+      />
+       <Tab.Screen 
+        name="Favorites" 
+        component={FavoritesScreen} 
+        options={{ title: 'Favorites' }}
       />
       <Tab.Screen 
         name="Profile" 
@@ -215,6 +226,16 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen 
+          name="EditRestaurant" 
+          component={EditRestaurantScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="ManageImages" 
+          component={ManageImagesScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
           name="QRScanner" 
           component={QRScannerScreen}
           options={{
@@ -230,7 +251,7 @@ export default function App() {
           options={{
             title: 'Restaurant Details',
             headerStyle: { backgroundColor: '#171717' },
-            headerTintColor: '#FFFFFF',
+            headerTintColor: '#FFFFFF',     
             headerTitleStyle: { fontWeight: 'bold' },
           }}
         />
