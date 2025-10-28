@@ -23,6 +23,8 @@ import RestaurantDetailScreen from './src/screens/RestaurantDetailScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import NearbyMapScreen from './src/screens/NearbyMapScreen';
+import EventsScreen from './src/screens/EventsScreen';
+import MenuScreen from './src/screens/MenuScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -237,9 +239,20 @@ export default function App() {
           options={{ headerShown: false }}
         />
     
-    <Stack.Screen 
+       <Stack.Screen 
           name="HappyHour" 
           component={HappyHourScreen} 
+          options={{ headerShown: false }}
+        />
+                <Stack.Screen 
+          name="EventsScreen" 
+          component={EventsScreen} 
+          options={{ headerShown: false }}
+        />
+    
+       <Stack.Screen 
+          name="MenuScreen" 
+          component={MenuScreen} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 
