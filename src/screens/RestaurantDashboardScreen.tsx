@@ -295,25 +295,68 @@ const RestaurantDashboardScreen = () => {
       </View>
 
       {/* Action Buttons */}
-      <View style={styles.actionButtons}>
+      <View style={styles.quickActions}>
         <TouchableOpacity 
-          style={styles.actionButtonOutline}
-          onPress={() => navigation.navigate('EditRestaurant' as never, { 
-            restaurant,
-            cuisineTypes,
-            foodStyles,
-            dietaryRestrictions
-          })}
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('EditRestaurant' as never)}
         >
-          <Ionicons name="settings-outline" size={16} color="#171717" />
-          <Text style={styles.actionButtonOutlineText}>Edit Profile</Text>
+          <Ionicons name="create-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Edit Details</Text>
+          <Text style={styles.actionSubtitle}>Update restaurant info</Text>
         </TouchableOpacity>
+
         <TouchableOpacity 
-          style={styles.actionButtonPrimary}
-          onPress={() => navigation.navigate('ManageImages' as never, { restaurantId: restaurant.id })}
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('Menu' as never)}
         >
-          <Ionicons name="images-outline" size={16} color="#FFFFFF" />
-          <Text style={styles.actionButtonPrimaryText}>Manage Images</Text>
+          <Ionicons name="restaurant-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Menu</Text>
+          <Text style={styles.actionSubtitle}>Manage menu files</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('Lunch' as never)}
+        >
+          <Ionicons name="sunny-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Lunch Special</Text>
+          <Text style={styles.actionSubtitle}>Daily lunch deals</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('HappyHour' as never)}
+        >
+          <Ionicons name="wine-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Happy Hour</Text>
+          <Text style={styles.actionSubtitle}>Manage specials</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('Promotions' as never)}
+        >
+          <Ionicons name="pricetag-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Promotions</Text>
+          <Text style={styles.actionSubtitle}>Special offers</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('Events' as never)}
+        >
+          <Ionicons name="calendar-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Events</Text>
+          <Text style={styles.actionSubtitle}>Upcoming events</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionCard}
+          onPress={() => navigation.navigate('ManageImages' as never)}
+        >
+          <Ionicons name="images-outline" size={24} color="#171717" />
+          <Text style={styles.actionTitle}>Manage Images</Text>
+          <Text style={styles.actionSubtitle}>Upload photos</Text>
         </TouchableOpacity>
       </View>
 
@@ -782,6 +825,40 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 40,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    gap: 12,
+  },
+  actionCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: '48%',
+    minHeight: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#171717',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  actionSubtitle: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });
 

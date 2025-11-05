@@ -21,10 +21,14 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import QRScannerScreen from './src/screens/QRScannerScreen';
 import RestaurantDetailScreen from './src/screens/RestaurantDetailScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import RestaurantOnboardingScreen from './src/screens/RestaurantOnboardingScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import NearbyMapScreen from './src/screens/NearbyMapScreen';
 import EventsScreen from './src/screens/EventsScreen';
 import MenuScreen from './src/screens/MenuScreen';
+import LunchSpecialScreen from './src/screens/LunchSpecialScreen';
+import PromotionalDealsScreen from './src/screens/PromotionalDealsScreen';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -101,33 +105,60 @@ function TabNavigator({ welcomeName }: { welcomeName?: string | null }) {
 }
 
 export default function App() {
-  const [initialRoute, setInitialRoute] = useState<'Login' | 'MainTabs' | 'Onboarding'>('Login');
+  const [initialRoute, setInitialRoute] = useState<'Login' | 'MainTabs' | 'Onboarding' | 'RestaurantOnboarding'>('Login');
   const [welcomeName, setWelcomeName] = useState<string | null>(null);
   const [needsOnboarding, setNeedsOnboarding] = useState<boolean>(false);
 
-  // Fetch or create profile for the current user
-  const ensureProfile = async (userId: string, email?: string | null): Promise<boolean> => {
+  // Fetch or create profile for the current user and determine onboarding path
+  const ensureProfile = async (userId: string, email?: string | null): Promise<{ hasProfile: boolean; route: string }> => {
     try {
-      const { data, error } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
-        .select('id, display_name')
+        .select('id, display_name, role')
         .eq('id', userId)
         .single();
       if (error && error.code !== 'PGRST116') throw error; // ignore not found
-      if (!data) {
+      
+      if (!profile) {
         // Create a profile with no display_name to trigger onboarding
         await supabase
           .from('profiles')
           .insert({ id: userId, role: 'user', display_name: null, vendor_verified: false });
         setWelcomeName(null);
-        return false;
+        return { hasProfile: false, route: 'Onboarding' };
       }
-      setWelcomeName(data.display_name ?? null);
-      return !!data.display_name;
+
+      // Check if user has a restaurant (vendor)
+      if (profile.role === 'vendor' || profile.role === 'admin') {
+        const { data: restaurant } = await supabase
+          .from('restaurants')
+          .select('id, onboarding_completed')
+          .eq('owner_id', userId)
+          .maybeSingle();
+
+        if (!restaurant) {
+          // Vendor without restaurant needs restaurant onboarding
+          return { hasProfile: true, route: 'RestaurantOnboarding' };
+        } else if (!restaurant.onboarding_completed) {
+          // Restaurant exists but onboarding not completed
+          return { hasProfile: true, route: 'RestaurantOnboarding' };
+        } else {
+          // Restaurant fully set up, go to dashboard
+          setWelcomeName(profile.display_name ?? null);
+          return { hasProfile: true, route: 'RestaurantDashboard' };
+        }
+      }
+
+      // Regular user
+      setWelcomeName(profile.display_name ?? null);
+      if (!profile.display_name) {
+        return { hasProfile: false, route: 'Onboarding' };
+      }
+      return { hasProfile: true, route: 'MainTabs' };
     } catch (e) {
       // Fail softly; keep navigation working
       setWelcomeName(null);
-      return false;
+      return { hasProfile: false, route: 'Onboarding' };
     }
   };
 
@@ -156,9 +187,9 @@ export default function App() {
           // Session established; ensure profile
           const session = (await supabase.auth.getSession()).data.session;
           if (session?.user) {
-            const hasName = await ensureProfile(session.user.id, session.user.email);
-            setNeedsOnboarding(!hasName);
-            setInitialRoute(hasName ? 'MainTabs' : 'Onboarding');
+            const { hasProfile, route } = await ensureProfile(session.user.id, session.user.email);
+            setNeedsOnboarding(!hasProfile);
+            setInitialRoute(route as any);
           }
         }
       } catch (e) {
@@ -170,9 +201,9 @@ export default function App() {
     // Check current session on app start
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        const hasName = await ensureProfile(session.user.id, session.user.email);
-        setNeedsOnboarding(!hasName);
-        setInitialRoute(hasName ? 'MainTabs' : 'Onboarding');
+        const { hasProfile, route } = await ensureProfile(session.user.id, session.user.email);
+        setNeedsOnboarding(!hasProfile);
+        setInitialRoute(route as any);
       } else {
         setInitialRoute('Login');
       }
@@ -181,9 +212,9 @@ export default function App() {
     // Listen to auth changes (magic link, logout, etc.)
     const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        const hasName = await ensureProfile(session.user.id, session.user.email);
-        setNeedsOnboarding(!hasName);
-        setInitialRoute(hasName ? 'MainTabs' : 'Onboarding');
+        const { hasProfile, route } = await ensureProfile(session.user.id, session.user.email);
+        setNeedsOnboarding(!hasProfile);
+        setInitialRoute(route as any);
       } else {
         setInitialRoute('Login');
         setWelcomeName(null);
@@ -219,6 +250,16 @@ export default function App() {
           }}
         />
         <Stack.Screen 
+          name="RestaurantOnboarding" 
+          component={RestaurantOnboardingScreen} 
+          options={{ 
+            title: 'Restaurant Setup',
+            headerStyle: { backgroundColor: '#171717' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: 'bold' },
+          }}
+        />
+        <Stack.Screen 
           name="MainTabs" 
           children={() => <TabNavigator welcomeName={welcomeName} />} 
           options={{ headerShown: false }}
@@ -245,14 +286,24 @@ export default function App() {
           options={{ headerShown: false }}
         />
                 <Stack.Screen 
-          name="EventsScreen" 
+          name="Events" 
           component={EventsScreen} 
           options={{ headerShown: false }}
         />
     
        <Stack.Screen 
-          name="MenuScreen" 
+          name="Menu" 
           component={MenuScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Lunch" 
+          component={LunchSpecialScreen} 
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen 
+          name="Promotions" 
+          component={PromotionalDealsScreen} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 

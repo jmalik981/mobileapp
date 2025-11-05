@@ -4,12 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 
 export default function OnboardingScreen({ navigation }: any) {
-  const [firstName, setFirstName] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   const handleContinue = async () => {
-    if (!firstName.trim()) {
-      Alert.alert('Add your name', 'Please enter your first name to personalize your experience.');
+    if (!displayName.trim()) {
+      Alert.alert('Add your name', 'Please enter your display name to personalize your experience.');
       return;
     }
     try {
@@ -23,7 +23,7 @@ export default function OnboardingScreen({ navigation }: any) {
       }
       const { error } = await supabase
         .from('profiles')
-        .update({ first_name: firstName.trim() })
+        .update({ display_name: displayName.trim() })
         .eq('id', uid);
       if (error) throw error;
       // Navigate to main app
@@ -40,18 +40,18 @@ export default function OnboardingScreen({ navigation }: any) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         <View style={styles.header}>
           <Ionicons name="sparkles-outline" size={40} color="#171717" />
-          <Text style={styles.title}>Welcome to That Happy Hour</Text>
-          <Text style={styles.subtitle}>Let’s personalize your experience</Text>
+          <Text style={styles.title}>Welcome to Appy Panda</Text>
+          <Text style={styles.subtitle}>Let's personalize your experience</Text>
         </View>
 
         <View style={styles.inputContainer}>
           <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="First name"
+            placeholder="Display name"
             placeholderTextColor="#999"
-            value={firstName}
-            onChangeText={setFirstName}
+            value={displayName}
+            onChangeText={setDisplayName}
             autoCapitalize="words"
             autoFocus
           />

@@ -26,28 +26,54 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [userType, setUserType] = useState<'consumer' | 'restaurant_owner'>('consumer');
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [pendingVerification, setPendingVerification] = useState(false);
   const [lastRedirectUsed, setLastRedirectUsed] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleRegister = async () => {
-    if (!email || !password) {
-      Alert.alert('Missing fields', 'Please enter email and password.');
+    setError(null);
+    
+    if (!email || !password || !firstName || !lastName) {
+      setError('Please fill in all required fields');
       return;
     }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
     try {
       setIsLoading(true);
       const hostUri = (Constants as any)?.expoConfig?.hostUri || (Constants as any)?.manifest?.hostUri;
-      const redirectTo = hostUri ? `exp://${hostUri}` : Linking.createURL('/')
+      const redirectTo = hostUri ? `exp://${hostUri}` : Linking.createURL('/');
       setLastRedirectUsed(redirectTo);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: redirectTo },
+        options: { 
+          emailRedirectTo: redirectTo,
+          data: {
+            user_type: userType,
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
       });
+      
       if (error) {
-        Alert.alert('Registration error', `${error.message}\nRedirect: ${redirectTo}`);
+        setError(error.message);
         throw error;
       }
       // Depending on Supabase email confirmation setting:
@@ -66,14 +92,27 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           Alert.alert('Verify your email', `We sent a confirmation email.\nRedirect: ${redirectTo}`);
         }
       } else {
-        // Session exists immediately => upsert profile display_name if provided
+        // Session exists immediately => create profile with proper role
         try {
           const uid = data.user?.id;
-          if (uid && firstName.trim().length > 0) {
-            await supabase.from('profiles').upsert({ id: uid, display_name: firstName.trim() });
+          if (uid) {
+            const displayName = `${firstName.trim()} ${lastName.trim()}`;
+            const role = userType === 'restaurant_owner' ? 'vendor' : 'user';
+            
+            await supabase.from('profiles').upsert({ 
+              id: uid, 
+              display_name: displayName,
+              role: role,
+              vendor_verified: userType === 'restaurant_owner'
+            });
           }
         } catch (_) {}
-        Alert.alert('Welcome!', 'Account created. You are now signed in.');
+        
+        if (userType === 'restaurant_owner') {
+          Alert.alert('Welcome!', 'Account created. Let\'s set up your restaurant!');
+        } else {
+          Alert.alert('Welcome!', 'Account created. You are now signed in.');
+        }
       }
       // onAuthStateChange in App.tsx will navigate after session exists
     } catch (err: any) {
@@ -81,11 +120,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       // Common cases: user already exists, signup disabled
       if (msg.toLowerCase().includes('user already registered')) {
         setPendingVerification(true);
-        Alert.alert('Account exists', 'This email is already registered. If you did not receive a confirmation, tap Resend verification.');
+        setError('This email is already registered. If you did not receive a confirmation, tap Resend verification.');
       } else if (msg.toLowerCase().includes('signups not allowed') || msg.toLowerCase().includes('signup disabled')) {
-        Alert.alert('Signups disabled', 'New registrations are disabled in Supabase Auth settings. Enable signups to proceed.');
+        setError('New registrations are disabled. Please contact support.');
       } else {
-        Alert.alert('Registration error', msg);
+        setError(msg);
       }
     } finally {
       setIsLoading(false);
@@ -200,19 +239,103 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               </View>
             </View>
 
-            {/* First Name (Register only) */}
+            {/* Register Form Fields */}
             {mode === 'register' && (
-              <View style={styles.inputContainer}>
-                <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="First name (optional)"
-                  placeholderTextColor="#999"
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  autoCapitalize="words"
-                />
-              </View>
+              <>
+                {/* Name Fields */}
+                <View style={styles.nameRow}>
+                  <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
+                    <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="First name"
+                      placeholderTextColor="#999"
+                      value={firstName}
+                      onChangeText={setFirstName}
+                      autoCapitalize="words"
+                    />
+                  </View>
+                  <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
+                    <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Last name"
+                      placeholderTextColor="#999"
+                      value={lastName}
+                      onChangeText={setLastName}
+                      autoCapitalize="words"
+                    />
+                  </View>
+                </View>
+
+                {/* Confirm Password */}
+                <View style={styles.inputContainer}>
+                  <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    placeholderTextColor="#999"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                {/* User Type Selection */}
+                <View style={styles.userTypeContainer}>
+                  <Text style={styles.userTypeLabel}>Account Type</Text>
+                  
+                  <TouchableOpacity
+                    style={[
+                      styles.userTypeOption,
+                      userType === 'consumer' && styles.userTypeOptionSelected
+                    ]}
+                    onPress={() => setUserType('consumer')}
+                  >
+                    <View style={styles.userTypeContent}>
+                      <View style={[
+                        styles.radioButton,
+                        userType === 'consumer' && styles.radioButtonSelected
+                      ]}>
+                        {userType === 'consumer' && <View style={styles.radioButtonInner} />}
+                      </View>
+                      <View style={styles.userTypeText}>
+                        <Text style={styles.userTypeTitle}>Food Lover</Text>
+                        <Text style={styles.userTypeDescription}>Find great deals</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.userTypeOption,
+                      userType === 'restaurant_owner' && styles.userTypeOptionSelected
+                    ]}
+                    onPress={() => setUserType('restaurant_owner')}
+                  >
+                    <View style={styles.userTypeContent}>
+                      <View style={[
+                        styles.radioButton,
+                        userType === 'restaurant_owner' && styles.radioButtonSelected
+                      ]}>
+                        {userType === 'restaurant_owner' && <View style={styles.radioButtonInner} />}
+                      </View>
+                      <View style={styles.userTypeText}>
+                        <Text style={styles.userTypeTitle}>Restaurant Owner</Text>
+                        <Text style={styles.userTypeDescription}>Promote my business</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Error Message */}
+                {error && (
+                  <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+                )}
+              </>
             )}
 
             {/* Login and Register CTAs */}
@@ -483,5 +606,81 @@ const styles = StyleSheet.create({
     color: '#171717',
     fontSize: 14,
     fontWeight: '600',
+  },
+  
+  // New styles for signup form
+  nameRow: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  userTypeContainer: {
+    marginBottom: 20,
+  },
+  userTypeLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#171717',
+    marginBottom: 12,
+  },
+  userTypeOption: {
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+  },
+  userTypeOptionSelected: {
+    backgroundColor: '#F0F9FF',
+    borderColor: '#171717',
+  },
+  userTypeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radioButton: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#D1D5DB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  radioButtonSelected: {
+    borderColor: '#171717',
+  },
+  radioButtonInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#171717',
+  },
+  userTypeText: {
+    flex: 1,
+  },
+  userTypeTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#171717',
+    marginBottom: 2,
+  },
+  userTypeDescription: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  errorContainer: {
+    backgroundColor: '#FEF2F2',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
