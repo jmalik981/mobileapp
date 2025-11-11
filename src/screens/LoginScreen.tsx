@@ -151,15 +151,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     }
   };
 
-  const handleRestaurantLogin = () => {
-    // Navigate to restaurant dashboard
-    navigation.replace('RestaurantDashboard');
-  };
-
-  const handleDeveloperLogin = () => {
-    // Skip authentication and go directly to main app
-    navigation.replace('MainTabs');
-  };
+  // Removed bypass login methods for security
 
   const handleSignUp = () => {
     handleRegister();
@@ -395,23 +387,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               </Text>
             </View>
 
-            {/* Restaurant Login Button */}
-            <TouchableOpacity 
-              style={styles.restaurantButton}
-              onPress={handleRestaurantLogin}
-            >
-              <Ionicons name="storefront-outline" size={20} color="#171717" />
-              <Text style={styles.restaurantButtonText}>Restaurant Login</Text>
-            </TouchableOpacity>
-
-            {/* Developer Login Button */}
-            <TouchableOpacity 
-              style={styles.developerButton}
-              onPress={handleDeveloperLogin}
-            >
-              <Ionicons name="code-outline" size={20} color="#171717" />
-              <Text style={styles.developerButtonText}>Developer Login</Text>
-            </TouchableOpacity>
+            {/* Removed bypass login buttons for security */}
 
             {/* Removed Google/Apple buttons as requested */}
 

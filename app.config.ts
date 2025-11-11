@@ -20,6 +20,18 @@ const config: ExpoConfig = {
   },
   ios: {
     supportsTablet: true,
+    bundleIdentifier: 'com.thathappyhour.app',
+    buildNumber: '1',
+    infoPlist: {
+      NSLocationWhenInUseUsageDescription: 'This app uses location to find nearby restaurants and happy hour deals.',
+      NSLocationAlwaysAndWhenInUseUsageDescription: 'This app uses location to find nearby restaurants and happy hour deals.',
+      NSCameraUsageDescription: 'This app uses the camera to scan QR codes and take photos for restaurant profiles.',
+      NSPhotoLibraryUsageDescription: 'This app accesses your photo library to upload images for restaurant profiles and menus.',
+      NSMicrophoneUsageDescription: 'This app may use the microphone for video recording features.',
+    },
+    config: {
+      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -27,7 +39,7 @@ const config: ExpoConfig = {
       backgroundColor: '#ffffff',
     },
     edgeToEdgeEnabled: true,
-    package: 'com.anonymous.ThatHappyHour',
+    package: 'com.thathappyhour.app',
     config: {
       googleMaps: {
         apiKey: process.env.GOOGLE_MAPS_API_KEY,
@@ -39,6 +51,8 @@ const config: ExpoConfig = {
   },
   extra: {
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+    supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
   },
 };
 

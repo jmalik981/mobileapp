@@ -28,6 +28,7 @@ import EventsScreen from './src/screens/EventsScreen';
 import MenuScreen from './src/screens/MenuScreen';
 import LunchSpecialScreen from './src/screens/LunchSpecialScreen';
 import PromotionalDealsScreen from './src/screens/PromotionalDealsScreen';
+import RestaurantPostsScreen from './src/screens/RestaurantPostsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -304,6 +305,11 @@ export default function App() {
           <Stack.Screen 
           name="Promotions" 
           component={PromotionalDealsScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="RestaurantPosts" 
+          component={RestaurantPostsScreen} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 

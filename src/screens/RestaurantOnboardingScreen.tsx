@@ -278,7 +278,7 @@ export default function RestaurantOnboardingScreen({ navigation }: any) {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome to Appy Panda</Text>
+          <Text style={styles.title}>Welcome to ThatHappyHour</Text>
           <Text style={styles.subtitle}>
             Step {currentPhase} of {phases.length}
           </Text>

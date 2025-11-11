@@ -40,7 +40,7 @@ export default function OnboardingScreen({ navigation }: any) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         <View style={styles.header}>
           <Ionicons name="sparkles-outline" size={40} color="#171717" />
-          <Text style={styles.title}>Welcome to Appy Panda</Text>
+          <Text style={styles.title}>Welcome to ThatHappyHour</Text>
           <Text style={styles.subtitle}>Let's personalize your experience</Text>
         </View>
 
